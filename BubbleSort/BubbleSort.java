@@ -2,98 +2,94 @@
 Name: Sean Styer
 File: BubbleSort.java
 Input: Path to a .txt file of integers
-Output: One sorted array using bubble sort
+Output: One sorted linked list using bubble sort
 */
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 public class BubbleSort{
   public static void main(String[] args){
-    //take in the provided file path and convert the data file into an array
+    //take in the provided file path and convert the data file into a linked list
     String filePath = args[0];
-    int numInts = getLength(filePath);
-    int[] input = createArray(filePath, numInts);
+    ListNode head = createList(filePath);
 
-    //sort and print the sorted array one element per line
-    sort(input);
+    //sort and print the sorted list
+    sort(head);
 
-    for(int i = 0; i < input.length - 1; i++){
-      System.out.print(input[i] + " ");
+    ListNode current = head;
+
+    while(current.next != null){
+      System.out.print(current.val + " ");
+      current = current.next;
     }
-    System.out.print(input[input.length - 1]);
+    System.out.print(current.val);
   }
 
   //sort an array of integers using bubble sort
-  public static void sort(int[] A){
-    //B1
-    int bound = A.length - 1;
-    //B2
-    int t = 0;
-    while(true){
-      t = 0;
-      for (int j = 0; j < bound; j++){
-        //B3
-        if(A[j] < A[j+1]){
-          swapElements(A,j,j+1);
-          t = j;
+  public static void sort(ListNode head) {
+    boolean didSwap = true;
+    ListNode current = head;
+    ListNode next = current.next;
+
+    //keep sorting until a pass is performed without swaps
+    while(didSwap){
+      current = head;
+      next = current.next;
+      didSwap = false;
+
+      while(next != null){
+        //if the current value is less than the next value, swap them
+        if(current.val < next.val){
+          int temp = current.val;
+          current.val = next.val;
+          next.val = temp;
+          didSwap = true;
         }
-      }
-      //B4
-      if(t == 0){
-        break;
-      }
-      else{
-        bound = t;
+
+        //index the current and next pointers forward
+        current = current.next;
+        next = next.next;
       }
     }
   }
 
-  public static int[] createArray(String filePath, int numInts){
-    File file = new File(filePath);
-    int[] userInput = new int[numInts];
+  //take in a text file of integers and enter them into a linked list
+    public static ListNode createList(String filePath){
 
-    //parse through the file and save each line as an integer in the array
-    try {
-            Scanner in = new Scanner(file);
-            int i = 0;
-            while (in.hasNextInt()) {
-                userInput[i] = in.nextInt();
-                i++;
-            }
-            in.close();
-        }
-        //in the event of an error, print the error
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+      File file = new File(filePath);
 
-    return userInput;
-  }
-  //parse through a file and return the number of elements
-  public static int getLength(String filePath){
-    int count = 0;
-    File input = new File(filePath);
+      //parse through the file and save each integer as a new ListNode
+      try {
+              Scanner in = new Scanner(file);
+              if(in.hasNextInt()){
+                ListNode head = new ListNode(in.nextInt());
+                ListNode current = head;
+                while (in.hasNextInt()) {
+                    current.next = new ListNode(in.nextInt());
+                    current = current.next;
+                }
+                return head;
+              }
+              in.close();
+          }
+          //in the event of an error, print the error
+          catch (FileNotFoundException e) {
+              e.printStackTrace();
+          }
 
-    //while the data file has a next element, increase the counter
-    try {
-            Scanner in = new Scanner(input);
-            int i = 0;
-            while (in.hasNextInt()) {
-                count++;
-                in.nextInt();
-            }
-            in.close();
-        }
-        //in the event of an error, print the error
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    return count;
-  }
+      return null;
+    }
 
   public static void swapElements(int[] A, int a, int b){
     int temp = A[a];
     A[a] = A[b];
     A[b] = temp;
+  }
+}
+class ListNode{
+  int val;
+  ListNode next;
+  public ListNode(int x){
+    val = x;
   }
 }
